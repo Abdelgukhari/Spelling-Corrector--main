@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Corrector</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            color: #273582;
+            font-weight: bold;
+        }
+        .btn-custom {
+            background-color: #ff7f00;
+            border-color: #ff7f00;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #e67300;
+            border-color: #e67300;
+        }
+        .loader {
+            display: none;
+            margin: 20px auto;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h2 class="title">Spelling Corrector</h2>
+        <form id="datafetch_form">
+            <div class="mb-3">
+                <textarea class="form-control" rows="5" id="comment" placeholder="Enter your text" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-custom">Predict</button>
+        </form>
+        <div class="loader"></div>
+        <div class="mt-4">
+            <h5 class="title">Results</h5>
+            <div class="result-box border p-3 rounded bg-light text-start">
+                <p class="json-result">Your corrected text will appear here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#datafetch_form").submit(function(e){
+                e.preventDefault();
+                var text_data = $('#comment').val();
+                if(text_data !== ""){
+                    $('.loader').show();
+                    $.ajax({
+                        url : "../predict",   // Update the URL accordingly
+                        type: "post",
+                        contentType: "application/json",
+                        data: JSON.stringify({data:text_data}),
+                        success: function(response){
+                            $(".json-result").html("<p>" + JSON.stringify(response.text, null, 2) + "</p>");
+                            $('.loader').hide();
+                        }
+                    });
+                } else {
+                    alert("Please enter some text!");
+                    $('#comment').focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
